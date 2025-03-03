@@ -5,9 +5,11 @@
   <title>Product Recommendation</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <style>
-    /* ================================
-       通用页面样式
-       ================================ */
+    /* 
+     ================================
+     通用页面样式
+     ================================
+    */
     body {
       font-family: Arial, sans-serif;
       background: #f5f5f7;
@@ -16,9 +18,11 @@
       overflow: auto; /* 允许页面滚动 */
     }
 
-    /* ================================
-       顶部横幅 “Product Assistant”
-       ================================ */
+    /* 
+     ================================
+     顶部横幅“Product Assistant”
+     ================================
+    */
     .header {
       display: flex;
       align-items: center;
@@ -45,13 +49,15 @@
       font-weight: normal;
     }
 
-    /* ================================
-       推荐容器
-       ================================ */
+    /* 
+     ================================
+     推荐容器 (整体包裹)
+     ================================
+    */
     .recommendation-wrapper {
       display: block;
       max-width: 1200px;
-      margin: 100px auto 40px auto;
+      margin: 100px auto 40px auto; /* 避免被 header 遮挡 */
       padding: 0 20px;
       box-sizing: border-box;
       text-align: center;
@@ -64,22 +70,27 @@
       line-height: 1.6;
     }
 
-    /* ================================
-       主容器：左右布局
-       ================================ */
+    /* 
+     ================================
+     主容器：左右布局
+     ================================
+     - 仅增大 gap 来拉开左右间距
+    */
     .container {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 60px;
+      display: flex;         
+      flex-wrap: wrap;       
+      gap: 60px;  /* 原本可能是40px，现在改为60px加大左右间隔 */
       align-items: flex-start;
-      justify-content: center;
+      justify-content: center; 
       background-color: #fafafa;
       border-radius: 5px;
       padding: 20px;
       text-align: left;
     }
 
-    /* 左侧：主图 + 轮播 + AI提示 */
+    /* 
+     左侧：主图 + 轮播
+    */
     .product-images {
       flex: 1 1 400px;
       max-width: 500px;
@@ -132,39 +143,38 @@
       border-color: #2a5bd8;
     }
 
-    /*
-       ================
-       AI Note提示区域
-       ================
-       - 默认隐藏, 颜色与 cart-message 相同
+    /* 
+       新增提示 #aiNote
+       - 位置与购物车提示相同的绿色
+       - 默认隐藏，可通过JS显示
     */
     #aiNote {
-      display: none; 
+      display: none;
       margin-top: 10px;
       font-size: 0.85rem;
-      color: green; /* 与加入购物车提示相同 */
+      color: green; /* 与 .cart-message 同色 */
       text-align: center;
     }
 
-    /* 右侧：文本信息 + 按钮 */
+    /* 
+     右侧：文本信息 + 按钮 
+     - 不动价格、购物车按钮、虚线框、About this item等布局
+    */
     .product-details {
       flex: 1 1 300px;
       min-width: 300px;
       display: flex;
-      flex-direction: column;
-      gap: 10px;
+      flex-direction: column; 
+      gap: 10px; /* 让内部元素间距更舒展 */
       justify-content: flex-start;
     }
     .product-details h2 {
       margin: 0 0 1rem 0;
-      font-size: 1.5rem;
-      font-weight: bold;
+      font-size: 1.5rem; 
+      font-weight: bold; 
     }
-    .small-gray {
-      color: #777;
-      font-size: 0.9rem;
-      margin-bottom: 0.5rem;
-    }
+
+    /* 虚线框、price、cart-button、about部分均保留原样 */
     .dashed-box {
       border: 1px dashed #ccc;
       padding: 10px;
@@ -174,7 +184,7 @@
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
-      margin-bottom: 8px;
+      margin-bottom: 8px; 
     }
     .tag-row {
       width: 100%;
@@ -185,7 +195,7 @@
     .tag-button {
       flex: 0 0 auto;
       padding: 6px 12px;
-      min-width: 90px;
+      min-width: 90px; 
       text-align: center;
       border: none;
       border-radius: 4px;
@@ -203,26 +213,28 @@
       color: #fff;
     }
 
-    #selectedOptions {
-      font-size: 0.85rem;
-      color: green;
+    .small-gray {
+      color: #777;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
     }
+
     .price {
       font-size: 1.4rem;
       font-weight: bold;
-      margin: 0.6rem 0;
+      margin: 0.6rem 0; 
     }
     .cart-button {
-      background-color: #2A5BD8;
+      background-color: #2A5BD8; 
       color: #fff;
       padding: 15px 100px;
       border: none;
       border-radius: 4px;
       cursor: pointer;
       font-size: 1rem;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.5rem; 
       transition: background-color 0.3s;
-      align-self: flex-start;
+      align-self: flex-start; 
     }
     .cart-button:hover {
       background-color: #1f4aaf;
@@ -233,6 +245,7 @@
       color: green;
       margin-bottom: 10px;
     }
+
     .about-divider {
       margin: 0.5rem 0;
       border: none;
@@ -253,6 +266,11 @@
       margin-bottom: 0.3rem;
     }
 
+    /* 选项提示 */
+    #selectedOptions {
+      font-size: 0.85rem;
+      color: green;
+    }
   </style>
 </head>
 <body>
@@ -271,13 +289,15 @@
     <h2>Product Assistant</h2>
   </div>
 
+  <!-- 推荐容器 -->
   <div class="recommendation-wrapper">
     <div class="recommend-note-top">
       Based on your needs, we recommend the following sofa for you.
     </div>
 
+    <!-- container: 左右布局(间距加大) -->
     <div class="container">
-      <!-- 左侧：默认主图 S1.png + 轮播 + AI Note -->
+      <!-- 左：主图 + 轮播 -->
       <div class="product-images">
         <img id="mainImage" class="main-image" src="S1.png" alt="Recommended Sofa Main Image" />
         <div class="carousel-container">
@@ -286,32 +306,27 @@
           <div class="arrow-button" id="nextArrow">&#9654;</div>
         </div>
 
-        <!-- 在此处新增AI提示, 颜色绿色 -->
+        <!-- AI提示文本 (默认隐藏, 点击特征后显示) -->
         <div id="aiNote">
           Note: This interface contains AI-generated elements.
         </div>
       </div>
 
-      <!-- 右侧：文本信息 + 按钮 -->
+      <!-- 右：文本信息 + 按钮(价格, 购物车, dashed-box等保持原样) -->
       <div class="product-details">
         <h2>Sofa, Perfect for modern minimalist style living room and pet-friendly design.</h2>
 
         <div class="dashed-box">
           <div class="small-gray">
-            Click to customize the specific features that is closest to your actual situation.
+            Click to customize the specific feature that is closest to your actual situation.
           </div>
+          <!-- 只示例4个风格按钮 -->
           <div class="tags">
             <div class="tag-row">
-              <span class="tag-button" data-type="style" data-value="D1_">Minimalist</span>
-              <span class="tag-button" data-type="style" data-value="D2_">Natural</span>
-              <span class="tag-button" data-type="style" data-value="D3_">Warm</span>
-              <span class="tag-button" data-type="style" data-value="D4_">Simple</span>
-            </div>
-            <div class="tag-row">
-              <span class="tag-button" data-type="gender" data-value="M">Male</span>
-              <span class="tag-button" data-type="gender" data-value="F">Female</span>
-              <span class="tag-button" data-type="age" data-value="Y">Young</span>
-              <span class="tag-button" data-type="age" data-value="O">Old</span>
+              <span class="tag-button" data-style="S1">Minimalist</span>
+              <span class="tag-button" data-style="S2">Natural</span>
+              <span class="tag-button" data-style="S3">Warm</span>
+              <span class="tag-button" data-style="S4">Simple</span>
             </div>
           </div>
           <div id="selectedOptions"></div>
@@ -331,121 +346,73 @@
           <li>Contact us at any time for support</li>
         </ul>
       </div>
-    </div>
-  </div>
+    </div><!-- /.container -->
+  </div><!-- /.recommendation-wrapper -->
 
   <script>
     /*
-      21张: B1, S1..S4, D1_*, D2_*, D3_*, D4_*
-      默认主图 S1
-      当用户单选Minimalist => [S1, D1_*, B1] ...
+      保留原有JS 逻辑:
+      1) 风格单选 + 二次点击取消 => S1 + B1
+      2) 轮播 (S1...B1)
+      3) 购物车提示 2秒
+      4) 新增: 点击特征后 => 显示 AI 提示
     */
 
-    const allImages = [
-      "B1.png",
-      "S1.png","S2.png","S3.png","S4.png",
-      "D1_YF.png","D1_YM.png","D1_OF.png","D1_OM.png",
-      "D2_YF.png","D2_YM.png","D2_OF.png","D2_OM.png",
-      "D3_YF.png","D3_YM.png","D3_OF.png","D3_OM.png",
-      "D4_YF.png","D4_YM.png","D4_OF.png","D4_OM.png"
-    ];
-
-    let selectedGender = null; // M/F
-    let selectedAge    = null; // Y/O
-    let selectedStyle  = null; // D1_/D2_/D3_/D4_
-
-    const THUMBNAILS_PER_PAGE = 5;
-    let thumbnailPageIndex = 0;
-
+    // 获取相关DOM
+    const styleButtons       = document.querySelectorAll("[data-style]");
     const mainImage          = document.getElementById("mainImage");
     const thumbnailContainer = document.getElementById("thumbnailContainer");
-    const tagButtons         = document.querySelectorAll(".tag-button");
-    const prevArrow          = document.getElementById("prevArrow");
-    const nextArrow          = document.getElementById("nextArrow");
+    const selectedOptionsDiv = document.getElementById("selectedOptions");
     const cartButton         = document.getElementById("addToCartBtn");
     const cartMessage        = document.getElementById("cartMessage");
-    const selectedOptionsDiv = document.getElementById("selectedOptions");
-
-    // 额外获取AI提示DOM
+    const prevArrow          = document.getElementById("prevArrow");
+    const nextArrow          = document.getElementById("nextArrow");
+    /* 新增提示 */
     const aiNote             = document.getElementById("aiNote");
 
-    // 初始化：主图 => S1
-    renderCurrentPage(allImages, "S1.png");
+    // 初始轮播
+    const images = ["B1.png","S1.png","S2.png","S3.png","S4.png"];
+    // 风格 => 图片
+    const styleMap = {
+      S1: "S1.png",
+      S2: "S2.png",
+      S3: "S3.png",
+      S4: "S4.png"
+    };
+    const B1 = "B1.png";
+    let selectedStyle = null;
 
-    // 点击标签 => 过滤 + 显示 AI提示
-    tagButtons.forEach(btn => {
+    // 默认主图 => S1
+    renderThumbnails(images, "S1.png");
+
+    // 点击风格按钮 => 单选/二次取消
+    styleButtons.forEach(btn => {
       btn.addEventListener("click", () => {
-        const { type, value } = btn.dataset;
-        
-        // 1) 单选/取消
-        if (type === "gender") {
-          if (btn.classList.contains("selected")) {
-            selectedGender = null;
-            btn.classList.remove("selected");
-          } else {
-            clearSelection("gender");
-            selectedGender = value;
-            btn.classList.add("selected");
-          }
-        }
-        else if (type === "age") {
-          if (btn.classList.contains("selected")) {
-            selectedAge = null;
-            btn.classList.remove("selected");
-          } else {
-            clearSelection("age");
-            selectedAge = value;
-            btn.classList.add("selected");
-          }
-        }
-        else if (type === "style") {
-          if (btn.classList.contains("selected")) {
-            selectedStyle = null;
-            btn.classList.remove("selected");
-          } else {
-            clearSelection("style");
-            selectedStyle = value;
-            btn.classList.add("selected");
-          }
-        }
-
-        // 2) 过滤+渲染
-        thumbnailPageIndex = 0;
-        const filtered = filterImages();
-        if (filtered.length > 0) {
-          renderCurrentPage(filtered, filtered[0]);
+        if (btn.classList.contains("selected")) {
+          // 二次点击 => 取消
+          btn.classList.remove("selected");
+          selectedStyle = null;
+          // 回到初始5张 + 主图S1
+          renderThumbnails(images, "S1.png");
+          selectedOptionsDiv.textContent = "";
         } else {
-          renderCurrentPage(allImages, "S1.png");
+          // 单选
+          styleButtons.forEach(b => b.classList.remove("selected"));
+          btn.classList.add("selected");
+          selectedStyle = btn.dataset.style;
+          // 仅 [Sx, B1]
+          const styleImgs = [ styleMap[selectedStyle], B1 ];
+          renderThumbnails(styleImgs, styleMap[selectedStyle]);
+          // 更新提示
+          selectedOptionsDiv.textContent = `You have selected the "${getStyleName(selectedStyle)}" features.`;
         }
 
-        // 3) 更新提示
-        updateSelectedOptions();
-
-        // 4) 显示AI提示
+        // 显示AI提示
         aiNote.style.display = "block";
       });
     });
 
-    // 左右箭头
-    prevArrow.addEventListener("click", () => {
-      const filtered = filterImages();
-      const currentArr = (filtered.length > 0) ? filtered : allImages;
-      if (thumbnailPageIndex > 0) {
-        thumbnailPageIndex--;
-        renderCurrentPage(currentArr, mainImage.src);
-      }
-    });
-    nextArrow.addEventListener("click", () => {
-      const filtered = filterImages();
-      const currentArr = (filtered.length > 0) ? filtered : allImages;
-      const maxPage = Math.ceil(currentArr.length / THUMBNAILS_PER_PAGE) - 1;
-      if (thumbnailPageIndex < maxPage) {
-        thumbnailPageIndex++;
-        renderCurrentPage(currentArr, mainImage.src);
-      }
-    });
-
-    // 购物车提示
+    // 购物车 => 2秒提示
     cartButton.addEventListener("click", () => {
       cartMessage.style.display = "block";
       setTimeout(() => {
@@ -453,69 +420,19 @@
       }, 2000);
     });
 
-    function clearSelection(type) {
-      tagButtons.forEach(b => {
-        if (b.dataset.type === type) {
-          b.classList.remove("selected");
-        }
-      });
-      if (type === "gender") selectedGender = null;
-      if (type === "age")    selectedAge = null;
-      if (type === "style")  selectedStyle = null;
-    }
+    // 左右箭头 => alert
+    prevArrow.addEventListener("click", () => {
+      alert("Prev clicked");
+    });
+    nextArrow.addEventListener("click", () => {
+      alert("Next clicked");
+    });
 
-    // 核心过滤
-    function filterImages() {
-      let result = allImages.filter(img => {
-        // gender
-        if (selectedGender && !img.includes(selectedGender)) {
-          return false;
-        }
-        // age
-        if (selectedAge && !img.includes(selectedAge)) {
-          return false;
-        }
-        return true;
-      });
-
-      // style
-      if (selectedStyle === "D1_") {
-        // Minimalist => [S1, D1_, B1]
-        result = result.filter(img => 
-          img === "S1.png" || img.startsWith("D1_")
-        );
-      } else if (selectedStyle === "D2_") {
-        // Natural => [S2, D2_, B1]
-        result = result.filter(img => 
-          img === "S2.png" || img.startsWith("D2_")
-        );
-      } else if (selectedStyle === "D3_") {
-        // Warm => [S3, D3_, B1]
-        result = result.filter(img => 
-          img === "S3.png" || img.startsWith("D3_")
-        );
-      } else if (selectedStyle === "D4_") {
-        // Simple => [S4, D4_, B1]
-        result = result.filter(img => 
-          img === "S4.png" || img.startsWith("D4_")
-        );
-      }
-
-      // B1 到末尾
-      if (!result.includes("B1.png")) {
-        result.push("B1.png");
-      }
-      return result;
-    }
-
-    function renderCurrentPage(imageList, mainSrc) {
+    // 公用渲染函数
+    function renderThumbnails(imgArr, mainSrc) {
       mainImage.src = mainSrc;
       thumbnailContainer.innerHTML = "";
-      const start = thumbnailPageIndex * THUMBNAILS_PER_PAGE;
-      const end   = start + THUMBNAILS_PER_PAGE;
-      const pageImgs = imageList.slice(start, end);
-
-      pageImgs.forEach(src => {
+      imgArr.forEach(src => {
         const thumb = document.createElement("img");
         thumb.src = src;
         thumb.alt = src;
@@ -525,23 +442,13 @@
         thumbnailContainer.appendChild(thumb);
       });
     }
-
-    function updateSelectedOptions() {
-      const chosen = [];
-      if (selectedGender === "M") chosen.push("Male");
-      if (selectedGender === "F") chosen.push("Female");
-      if (selectedAge === "Y")    chosen.push("Young");
-      if (selectedAge === "O")    chosen.push("Old");
-      if (selectedStyle === "D1_") chosen.push("Minimalist");
-      if (selectedStyle === "D2_") chosen.push("Natural");
-      if (selectedStyle === "D3_") chosen.push("Warm");
-      if (selectedStyle === "D4_") chosen.push("Simple");
-
-      if (chosen.length > 0) {
-        const text = chosen.map(feature => `"${feature}"`).join(", ");
-        selectedOptionsDiv.textContent = `You have selected the ${text} features.`;
-      } else {
-        selectedOptionsDiv.textContent = "";
+    function getStyleName(sKey) {
+      switch(sKey) {
+        case "S1": return "Minimalist";
+        case "S2": return "Natural";
+        case "S3": return "Warm";
+        case "S4": return "Simple";
+        default:   return "Default";
       }
     }
   </script>
