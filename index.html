@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Product Recommendation</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <style>
+    /* ================================
+       通用页面样式
+       ================================ */
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f7;
+      margin: 0;
+      padding: 0;
+      overflow: auto; /* 允许页面滚动 */
+    }
+
+    /* ================================
+       顶部横幅 “Product Assistant”
+       ================================ */
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 10px 20px;
+      background: #fff;
+      border-bottom: 1px solid #ddd;
+      width: 100%;
+      box-sizing: border-box;
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 999;
+      height: 70px;
+    }
+    .star-logo {
+      width: 40px;
+      height: 40px;
+      margin-right: 10px;
+    }
+    .header h2 {
+      margin: 0;
+      font-size: 18px;
+      color: #888;
+      font-weight: normal;
+    }
+
+    /* ================================
+       推荐容器
+       ================================ */
+    .recommendation-wrapper {
+      display: block;
+      max-width: 1200px;
+      margin: 100px auto 40px auto;
+      padding: 0 20px;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    .recommend-note-top {
+      margin-bottom: 30px;
+      font-size: 26px;
+      color: #222;
+      font-weight: bold;
+      line-height: 1.6;
+    }
+
+    /* ================================
+       主容器：左右布局
+       ================================ */
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 60px;
+      align-items: flex-start;
+      justify-content: center;
+      background-color: #fafafa;
+      border-radius: 5px;
+      padding: 20px;
+      text-align: left;
+    }
+
+    /* 左侧：主图 + 轮播 + AI提示 */
+    .product-images {
+      flex: 1 1 400px;
+      max-width: 500px;
+    }
+    .main-image {
+      width: 100%;
+      display: block;
+      border-radius: 4px;
+      margin-bottom: 15px;
+    }
+    .carousel-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .arrow-button {
+      cursor: pointer;
+      font-size: 24px;
+      background: #fff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      transition: background-color 0.3s;
+    }
+    .arrow-button:hover {
+      background-color: #eee;
+    }
+    .thumbnails {
+      display: flex;
+      gap: 5px;
+    }
+    .thumbnails img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      cursor: pointer;
+      border-radius: 4px;
+      border: 1px solid #ddd;
+      padding: 2px;
+      background-color: #fff;
+      transition: border-color 0.3s;
+    }
+    .thumbnails img:hover {
+      border-color: #2a5bd8;
+    }
+
+    /*
+       ================
+       AI Note提示区域
+       ================
+       - 默认隐藏, 颜色与 cart-message 相同
+    */
+    #aiNote {
+      display: none; 
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: green; /* 与加入购物车提示相同 */
+      text-align: center;
+    }
+
+    /* 右侧：文本信息 + 按钮 */
+    .product-details {
+      flex: 1 1 300px;
+      min-width: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      justify-content: flex-start;
+    }
+    .product-details h2 {
+      margin: 0 0 1rem 0;
+      font-size: 1.5rem;
+      font-weight: bold;
+    }
+    .small-gray {
+      color: #777;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+    .dashed-box {
+      border: 1px dashed #ccc;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+    .tag-row {
+      width: 100%;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-start;
+    }
+    .tag-button {
+      flex: 0 0 auto;
+      padding: 6px 12px;
+      min-width: 90px;
+      text-align: center;
+      border: none;
+      border-radius: 4px;
+      background-color:#9e9e9e; /* 默认黄色 */
+      cursor: pointer;
+      font-size: 0.9rem;
+      color: #fff; /* 白字 */
+      transition: background-color 0.3s;
+    }
+    .tag-button:hover {
+      background-color: #6e6e6e;
+    }
+    .tag-button.selected {
+      background-color: #2A5BD8; 
+      color: #fff;
+    }
+
+    #selectedOptions {
+      font-size: 0.85rem;
+      color: green;
+    }
+    .price {
+      font-size: 1.4rem;
+      font-weight: bold;
+      margin: 0.6rem 0;
+    }
+    .cart-button {
+      background-color: #2A5BD8;
+      color: #fff;
+      padding: 15px 100px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      margin-bottom: 0.5rem;
+      transition: background-color 0.3s;
+      align-self: flex-start;
+    }
+    .cart-button:hover {
+      background-color: #1f4aaf;
+    }
+    .cart-message {
+      display: none;
+      font-size: 0.9rem;
+      color: green;
+      margin-bottom: 10px;
+    }
+    .about-divider {
+      margin: 0.5rem 0;
+      border: none;
+      border-top: 1px dashed #ccc; 
+    }
+    .about-title {
+      font-size: 1rem;
+      font-weight: bold;
+      margin-bottom: 0.01rem;
+    }
+    .about-list {
+      list-style: disc;
+      margin-left: 20px;
+      padding-left: 0;
+      margin-top: 0.01rem; 
+    }
+    .about-list li {
+      margin-bottom: 0.3rem;
+    }
+
+  </style>
+</head>
+<body>
+  <!-- 顶部横幅 -->
+  <div class="header">
+    <!-- 去掉动画、用 <g> 包住圆和线，rotate 45° -->
+    <svg class="star-logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 576 512">
+      <!-- 星形本体 -->
+      <path fill="#888" d="M287.9 17.8L354 150.2 499.5 171.5C519.8 173.7 529.9 196.1 514.4 209.5L406.6 303.4 430.6 448.5C433.1 468.8 413.9 483.7 399.4 475.3L288 410.6 176.6 475.3C162.1 483.7 142.9 468.8 145.4 448.5L169.4 303.4 61.6 209.5C46.1 196.1 56.2 173.7 76.5 171.5L222 150.2 287.1 17.8C293.9 0.6 302.1 0.6 307.9 17.8H287.9z"/>
+      <!-- 圆 + 斜线用 g 来旋转 -->
+      <g transform="rotate(45, 448, 448)">
+        <circle cx="448" cy="448" r="80" stroke="#888" stroke-width="30" fill="none" />
+        <line x1="512" y1="512" x2="576" y2="576" stroke="#888" stroke-width="30" stroke-linecap="round"/>
+      </g>
+    </svg>
+    <h2>Product Assistant</h2>
+  </div>
+
+  <div class="recommendation-wrapper">
+    <div class="recommend-note-top">
+      Based on your needs, we recommend the following sofa for you.
+    </div>
+
+    <div class="container">
+      <!-- 左侧：默认主图 S1.png + 轮播 + AI Note -->
+      <div class="product-images">
+        <img id="mainImage" class="main-image" src="S1.png" alt="Recommended Sofa Main Image" />
+        <div class="carousel-container">
+          <div class="arrow-button" id="prevArrow">&#9664;</div>
+          <div class="thumbnails" id="thumbnailContainer"></div>
+          <div class="arrow-button" id="nextArrow">&#9654;</div>
+        </div>
+
+        <!-- 在此处新增AI提示, 颜色绿色 -->
+        <div id="aiNote">
+          Note: This interface contains AI-generated elements.
+        </div>
+      </div>
+
+      <!-- 右侧：文本信息 + 按钮 -->
+      <div class="product-details">
+        <h2>Sofa, Perfect for modern minimalist style living room and pet-friendly design.</h2>
+
+        <div class="dashed-box">
+          <div class="small-gray">
+            Click to customize the specific features that is closest to your actual situation.
+          </div>
+          <div class="tags">
+            <div class="tag-row">
+              <span class="tag-button" data-type="style" data-value="D1_">Minimalist</span>
+              <span class="tag-button" data-type="style" data-value="D2_">Natural</span>
+              <span class="tag-button" data-type="style" data-value="D3_">Warm</span>
+              <span class="tag-button" data-type="style" data-value="D4_">Simple</span>
+            </div>
+            <div class="tag-row">
+              <span class="tag-button" data-type="gender" data-value="M">Male</span>
+              <span class="tag-button" data-type="gender" data-value="F">Female</span>
+              <span class="tag-button" data-type="age" data-value="Y">Young</span>
+              <span class="tag-button" data-type="age" data-value="O">Old</span>
+            </div>
+          </div>
+          <div id="selectedOptions"></div>
+        </div>
+
+        <div class="price">$392.55</div>
+        <button class="cart-button" id="addToCartBtn">Add to cart</button>
+        <div class="cart-message" id="cartMessage">This product has been added to cart!</div>
+
+        <hr class="about-divider"/>
+        <div class="about-title">About this item</div>
+        <ul class="about-list">
+          <li>Modern Comfortable Sofa</li>
+          <li>Chic Deep Channel Tufting</li>
+          <li>Supported by sturdy legs</li>
+          <li>Easy to assemble and care</li>
+          <li>Contact us at any time for support</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    /*
+      21张: B1, S1..S4, D1_*, D2_*, D3_*, D4_*
+      默认主图 S1
+      当用户单选Minimalist => [S1, D1_*, B1] ...
+    */
+
+    const allImages = [
+      "B1.png",
+      "S1.png","S2.png","S3.png","S4.png",
+      "D1_YF.png","D1_YM.png","D1_OF.png","D1_OM.png",
+      "D2_YF.png","D2_YM.png","D2_OF.png","D2_OM.png",
+      "D3_YF.png","D3_YM.png","D3_OF.png","D3_OM.png",
+      "D4_YF.png","D4_YM.png","D4_OF.png","D4_OM.png"
+    ];
+
+    let selectedGender = null; // M/F
+    let selectedAge    = null; // Y/O
+    let selectedStyle  = null; // D1_/D2_/D3_/D4_
+
+    const THUMBNAILS_PER_PAGE = 5;
+    let thumbnailPageIndex = 0;
+
+    const mainImage          = document.getElementById("mainImage");
+    const thumbnailContainer = document.getElementById("thumbnailContainer");
+    const tagButtons         = document.querySelectorAll(".tag-button");
+    const prevArrow          = document.getElementById("prevArrow");
+    const nextArrow          = document.getElementById("nextArrow");
+    const cartButton         = document.getElementById("addToCartBtn");
+    const cartMessage        = document.getElementById("cartMessage");
+    const selectedOptionsDiv = document.getElementById("selectedOptions");
+
+    // 额外获取AI提示DOM
+    const aiNote             = document.getElementById("aiNote");
+
+    // 初始化：主图 => S1
+    renderCurrentPage(allImages, "S1.png");
+
+    // 点击标签 => 过滤 + 显示 AI提示
+    tagButtons.forEach(btn => {
+      btn.addEventListener("click", () => {
+        const { type, value } = btn.dataset;
+        
+        // 1) 单选/取消
+        if (type === "gender") {
+          if (btn.classList.contains("selected")) {
+            selectedGender = null;
+            btn.classList.remove("selected");
+          } else {
+            clearSelection("gender");
+            selectedGender = value;
+            btn.classList.add("selected");
+          }
+        }
+        else if (type === "age") {
+          if (btn.classList.contains("selected")) {
+            selectedAge = null;
+            btn.classList.remove("selected");
+          } else {
+            clearSelection("age");
+            selectedAge = value;
+            btn.classList.add("selected");
+          }
+        }
+        else if (type === "style") {
+          if (btn.classList.contains("selected")) {
+            selectedStyle = null;
+            btn.classList.remove("selected");
+          } else {
+            clearSelection("style");
+            selectedStyle = value;
+            btn.classList.add("selected");
+          }
+        }
+
+        // 2) 过滤+渲染
+        thumbnailPageIndex = 0;
+        const filtered = filterImages();
+        if (filtered.length > 0) {
+          renderCurrentPage(filtered, filtered[0]);
+        } else {
+          renderCurrentPage(allImages, "S1.png");
+        }
+
+        // 3) 更新提示
+        updateSelectedOptions();
+
+        // 4) 显示AI提示
+        aiNote.style.display = "block";
+      });
+    });
+
+    // 左右箭头
+    prevArrow.addEventListener("click", () => {
+      const filtered = filterImages();
+      const currentArr = (filtered.length > 0) ? filtered : allImages;
+      if (thumbnailPageIndex > 0) {
+        thumbnailPageIndex--;
+        renderCurrentPage(currentArr, mainImage.src);
+      }
+    });
+    nextArrow.addEventListener("click", () => {
+      const filtered = filterImages();
+      const currentArr = (filtered.length > 0) ? filtered : allImages;
+      const maxPage = Math.ceil(currentArr.length / THUMBNAILS_PER_PAGE) - 1;
+      if (thumbnailPageIndex < maxPage) {
+        thumbnailPageIndex++;
+        renderCurrentPage(currentArr, mainImage.src);
+      }
+    });
+
+    // 购物车提示
+    cartButton.addEventListener("click", () => {
+      cartMessage.style.display = "block";
+      setTimeout(() => {
+        cartMessage.style.display = "none";
+      }, 2000);
+    });
+
+    function clearSelection(type) {
+      tagButtons.forEach(b => {
+        if (b.dataset.type === type) {
+          b.classList.remove("selected");
+        }
+      });
+      if (type === "gender") selectedGender = null;
+      if (type === "age")    selectedAge = null;
+      if (type === "style")  selectedStyle = null;
+    }
+
+    // 核心过滤
+    function filterImages() {
+      let result = allImages.filter(img => {
+        // gender
+        if (selectedGender && !img.includes(selectedGender)) {
+          return false;
+        }
+        // age
+        if (selectedAge && !img.includes(selectedAge)) {
+          return false;
+        }
+        return true;
+      });
+
+      // style
+      if (selectedStyle === "D1_") {
+        // Minimalist => [S1, D1_, B1]
+        result = result.filter(img => 
+          img === "S1.png" || img.startsWith("D1_")
+        );
+      } else if (selectedStyle === "D2_") {
+        // Natural => [S2, D2_, B1]
+        result = result.filter(img => 
+          img === "S2.png" || img.startsWith("D2_")
+        );
+      } else if (selectedStyle === "D3_") {
+        // Warm => [S3, D3_, B1]
+        result = result.filter(img => 
+          img === "S3.png" || img.startsWith("D3_")
+        );
+      } else if (selectedStyle === "D4_") {
+        // Simple => [S4, D4_, B1]
+        result = result.filter(img => 
+          img === "S4.png" || img.startsWith("D4_")
+        );
+      }
+
+      // B1 到末尾
+      if (!result.includes("B1.png")) {
+        result.push("B1.png");
+      }
+      return result;
+    }
+
+    function renderCurrentPage(imageList, mainSrc) {
+      mainImage.src = mainSrc;
+      thumbnailContainer.innerHTML = "";
+      const start = thumbnailPageIndex * THUMBNAILS_PER_PAGE;
+      const end   = start + THUMBNAILS_PER_PAGE;
+      const pageImgs = imageList.slice(start, end);
+
+      pageImgs.forEach(src => {
+        const thumb = document.createElement("img");
+        thumb.src = src;
+        thumb.alt = src;
+        thumb.addEventListener("click", () => {
+          mainImage.src = src;
+        });
+        thumbnailContainer.appendChild(thumb);
+      });
+    }
+
+    function updateSelectedOptions() {
+      const chosen = [];
+      if (selectedGender === "M") chosen.push("Male");
+      if (selectedGender === "F") chosen.push("Female");
+      if (selectedAge === "Y")    chosen.push("Young");
+      if (selectedAge === "O")    chosen.push("Old");
+      if (selectedStyle === "D1_") chosen.push("Minimalist");
+      if (selectedStyle === "D2_") chosen.push("Natural");
+      if (selectedStyle === "D3_") chosen.push("Warm");
+      if (selectedStyle === "D4_") chosen.push("Simple");
+
+      if (chosen.length > 0) {
+        const text = chosen.map(feature => `"${feature}"`).join(", ");
+        selectedOptionsDiv.textContent = `You have selected the ${text} features.`;
+      } else {
+        selectedOptionsDiv.textContent = "";
+      }
+    }
+  </script>
+</body>
+</html>
