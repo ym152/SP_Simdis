@@ -78,11 +78,11 @@
     #selectedOptions{font-size:.85rem;color:green;}
         /* ========================== 返回调查按钮 ========================== */
     .return-survey { text-align: center; margin: 40px 0 60px 0; }
-    .return-survey a {
+    .return-survey button {
       display: inline-block; padding: 10px 25px; background: #2A5BD8; color: #fff; text-decoration: none;
       border-radius: 5px; font-size: 1rem; font-weight: bold;
     }
-    .return-survey a:hover { text-decoration: underline; }
+    .return-survey button:hover {opacity:.9;}
   </style>
 </head>
 <body>
@@ -106,7 +106,7 @@
 
     <!-- NEW: 顶部提示框 -->
     <div class="instruction-box">
-      Please take a moment to review the product below. When you're ready, click "Add to cart" if you would consider purchasing it. Once finished, kindly return to the survey to continue with the remaining questions.
+      Please take a moment to review the product below. When you're ready, click "Add to cart" if you would consider purchasing it. Then, kindly click “Return to Survey” to continue with the remaining questions.
     </div>
 
     <!-- 主内容 -->
@@ -159,10 +159,11 @@
   </div>
     <!-- 返回调查按钮 -->
     <div class="return-survey">
-      <a href="https://mcmasterxceei.co1.qualtrics.com/jfe/form/SV_56HZjPBkuq8gDno" target="_self">← Return to Survey</a>
+      <button id="returnBtn">← Return to Survey</button>
     </div>
   </div>
   <script>
+  
     /* -------- 原有脚本 -------- */
     const styleButtons=document.querySelectorAll("[data-style]");
     const mainImage=document.getElementById("mainImage");
@@ -212,6 +213,14 @@
       switch(key){case"S1":return"Minimalist";case"S2":return"Natural";
       case"S3":return"Warm";case"S4":return"Simple";default:return"Default";}
     }
+    /* 返回按钮：postMessage + fallback */
+    document.getElementById("returnBtn").addEventListener("click",()=>{
+      if(window.parent && window.parent!==window){
+        window.parent.postMessage("gotoQ1","*"); // 通知 Qualtrics 跳到第1题
+      }else{
+        location.href="https://mcmasterxceei.co1.qualtrics.com/jfe/form/SV_56HZjPBkuq8gDno"; // 本地调试
+      }
+    });
   </script>
 </body>
 </html>
