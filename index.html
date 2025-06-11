@@ -216,7 +216,7 @@
     /* 返回按钮：postMessage + fallback */
     document.getElementById("returnBtn").addEventListener("click",()=>{
       if(window.parent && window.parent!==window){
-        window.parent.postMessage("goNext","https://mcmasterxceei.co1.qualtrics.com/jfe/form/SV_08SzSwLIvwvtr9A"); // 通知 Qualtrics 跳到下一题
+        window.parent.postMessage("goNext","*"); // 通知 Qualtrics 跳到下一题
       }else{
         location.href="https://mcmasterxceei.co1.qualtrics.com/jfe/form/SV_08SzSwLIvwvtr9A"; // 本地调试
       }
