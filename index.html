@@ -216,9 +216,9 @@
     /* 返回按钮：postMessage + fallback */
     document.getElementById("returnBtn").addEventListener("click",()=>{
       if(window.parent && window.parent!==window){
-        window.parent.postMessage("gotoQ1","*"); // 通知 Qualtrics 跳到第1题
+        window.parent.postMessage("gotoNext","*"); // 通知 Qualtrics 跳到下一题
       }else{
-        location.href="https://mcmasterxceei.co1.qualtrics.com/jfe/form/SV_eb4chYzEFY2LU9g"; // 本地调试
+        location.href="https://mcmasterxceei.co1.qualtrics.com/jfe/form/SV_0J8EBA4XaNjoKXQ"; // 本地调试
       }
     });
   </script>
