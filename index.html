@@ -83,6 +83,8 @@
       border-radius:5px; font-size:0.9rem; font-weight:normal;
     }
     .return-survey button:hover {opacity:.9;}
+        /* ✅ 新增：默认隐藏返回按钮 */
+    #returnBtn {display: none;}
   </style>
 </head>
 <body>
@@ -163,7 +165,7 @@
     </div>
   </div>
   <script>
-  
+    
     /* -------- 原有脚本 -------- */
     const styleButtons=document.querySelectorAll("[data-style]");
     const mainImage=document.getElementById("mainImage");
@@ -213,6 +215,10 @@
       switch(key){case"S1":return"Minimalist";case"S2":return"Natural";
       case"S3":return"Warm";case"S4":return"Simple";default:return"Default";}
     }
+      // ✅ 新增：5秒后显示“Return to Survey”按钮
+    setTimeout(() => {
+      document.getElementById("returnBtn").style.display = "inline-block";
+    }, 5000);
     /* 返回按钮：postMessage + fallback */
     document.getElementById("returnBtn").addEventListener("click",()=>{
       if(window.parent && window.parent!==window){
