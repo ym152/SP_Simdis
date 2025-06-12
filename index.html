@@ -218,7 +218,7 @@
       // ✅ 新增：5秒后显示“Return to Survey”按钮
     setTimeout(() => {
       document.getElementById("returnBtn").style.display = "inline-block";
-    }, 5000);
+    }, 10000);
     /* 返回按钮：postMessage + fallback */
     document.getElementById("returnBtn").addEventListener("click",()=>{
       if(window.parent && window.parent!==window){
