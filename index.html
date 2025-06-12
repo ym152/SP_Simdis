@@ -223,7 +223,7 @@
     /* 返回按钮：postMessage + fallback */
     document.getElementById("returnBtn").addEventListener("click",()=>{
       if(window.opener){
-        window.opener.postMessage("gotoQ1","https://mcmasterxceei.co1.qualtrics.com"); // 通知 Qualtrics 跳到下一题
+        window.opener.postMessage("gotoQ1","*"); // 通知 Qualtrics 跳到下一题
       }else{
         location.href="https://mcmasterxceei.co1.qualtrics.com/jfe/form/SV_7ULdlo52rIlJGUC";  // 本地调试
       }
