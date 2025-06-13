@@ -221,20 +221,13 @@
       document.getElementById("returnBtn").style.display = "inline-block";
     }, 1000);
 
-    /* —— 0. 解析 ret=XXX —— */
-    const qs   = new URLSearchParams(location.search);
-    const ret  = qs.get("ret");                               // 受访者专属 SurveyURL
-    const jump = ret ? decodeURIComponent(ret) + "&Q_JUMP=QID7"
-                     : "https://mcmasterxceei.co1.qualtrics.com/jfe/form/SV_8pjlbAgVDXejHvM?Q_JUMP=QID7";
-    
-    /* —— 1. Return 按钮 —— */
-    document.getElementById("returnBtn").addEventListener("click", () => {
-      if (window.opener && !window.opener.closed) {
-        window.opener.postMessage("gotoQID7", "*");            // ① 尝试即时跳
-        window.close();
-      } else {
-        window.location.href = jump;                           // ② 兜底整页跳
-      }
+      document.getElementById("returnBtn").addEventListener("click",()=>{
+            if(window.opener && !window.opener.closed) {
+              window.opener.postMessage("gotoQ1","*"); // 通知 Qualtrics 跳到下一题
+              window.close();
+            }
+              window.location.href =
+                "https://mcmasterxceei.co1.qualtrics.com/jfe/form/SV_8pjlbAgVDXejHvM";
     });
   </script>
 </body>
