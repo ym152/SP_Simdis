@@ -220,14 +220,25 @@
     setTimeout(() => {
       document.getElementById("returnBtn").style.display = "inline-block";
     }, 1000);
-    /* 返回按钮：postMessage + fallback */
-    document.getElementById("returnBtn").addEventListener("click",()=>{
-      if(window.opener && !window.opener.closed) {
-        window.opener.postMessage("gotoQ1","*"); // 通知 Qualtrics 跳到下一题
-        window.close();
+    /* —— 0. 解析 ?ret=... → 生成跳转 URL —— */
+    const qs      = new URLSearchParams(location.search);
+    const retRaw  = qs.get("ret");                  // 已编码的 SurveyURL
+    const surveyURL = retRaw ? decodeURIComponent(retRaw) :
+      "https://mcmasterxceei.co1.qualtrics.com/jfe/form/SV_8pjlbAgVDXejHvM"; // 兜底
+    const jumpURL = surveyURL + "&Q_JUMP=QID7";     // 目标题目 QID7
+    
+    /* —— 1. 返回按钮 —— */
+    document.getElementById("returnBtn").addEventListener("click", () => {
+    
+      /* 1.1 优先用 postMessage，不刷新原问卷 */
+      if (window.opener && !window.opener.closed) {
+        window.opener.postMessage("gotoQID7", "*");   // 注意改成 QID7
+        window.close();                               // 关闭当前页
+        return;                                       // 结束函数
       }
-        window.location.href =
-          "https://mcmasterxceei.co1.qualtrics.com/jfe/form/SV_8pjlbAgVDXejHvM?Q_JUMP=QID7";
+    
+      /* 1.2 若 opener 不存在 / 被拦截，则直接刷新到 jumpURL */
+      window.location.href = jumpURL;
     });
   </script>
 </body>
