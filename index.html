@@ -29,6 +29,7 @@
       text-align:center;
       line-height:1.4;
     }
+    .instruction-box.faded{color:#777;               /* 目标灰色，可按需调整 */}
 
     /* ========================== 主容器：左右布局 ========================== */
     .container{display:flex;flex-wrap:wrap;gap:60px;align-items:flex-start;justify-content:center;
@@ -216,6 +217,10 @@
       switch(key){case"S1":return"Minimalist";case"S2":return"Natural";
       case"S3":return"Warm";case"S4":return"Simple";default:return"Default";}
     }
+      /* 30 000 毫秒后淡化提示文字 */
+    setTimeout(() => {
+    document.querySelector('.instruction-box')?.classList.add('faded');
+    }, 10000);
       // ✅ 新增：5秒后显示“Return to Survey”按钮
     setTimeout(() => {
       document.getElementById("returnBtn").style.display = "inline-block";
